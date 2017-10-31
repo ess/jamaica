@@ -80,5 +80,5 @@ func SetRootCmd(cmd *cobra.Command) {
 }
 
 func LastCommandOutput() string {
-	commandOutput
+	return commandOutput
 }
