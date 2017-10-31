@@ -16,15 +16,19 @@ var commandOutput string
 var lastCommandRanErr error
 
 func iRun(fullCommand string) error {
+	if rootCmd == nil {
+		return fmt.Errorf("You must set the root command via jamaica.SetRootCmd before running Jamaica steps.")
+	}
+
 	args := strings.Split(fullCommand, " ")[1:]
 
-	cmd.RootCmd.SetArgs(args)
+	rootCmd.SetArgs(args)
 
 	old := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	lastCommandRanErr = cmd.RootCmd.Execute()
+	lastCommandRanErr = rootCmd.Execute()
 	outC := make(chan string)
 	go func() {
 		var buf bytes.Buffer
@@ -61,8 +65,6 @@ func theCommandFails() error {
 }
 
 func StepUp(s *godog.Suite) {
-	rootCmd = cmd
-
 	s.Step(`^I run "([^"]*)"$`, iRun)
 	s.Step(`the command succeeds`, theCommandSucceeds)
 	s.Step(`the command fails`, theCommandFails)
@@ -73,6 +75,6 @@ func StepUp(s *godog.Suite) {
 	})
 }
 
-func SetRootCmd(c *cobra.Command) {
-	rootCmd = c
+func SetRootCmd(cmd *cobra.Command) {
+	rootCmd = cmd
 }
