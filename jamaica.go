@@ -35,6 +35,8 @@ func iRun(fullCommand string) error {
 	w.Close()
 	os.Stdout = old
 	commandOutput = <-outC
+
+	return nil
 }
 
 func theCommandSucceeds() error {
