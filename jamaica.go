@@ -34,7 +34,7 @@ func iRun(fullCommand string) error {
 
 	w.Close()
 	os.Stdout = old
-	commandOutput = outC
+	commandOutput = <-outC
 }
 
 func theCommandSucceeds() error {
@@ -44,6 +44,8 @@ func theCommandSucceeds() error {
 			lastCommandRanErr.Error(),
 		)
 	}
+
+	return nil
 }
 
 func theCommandFails() error {
@@ -52,6 +54,8 @@ func theCommandFails() error {
 			"Expected a bad exit status, got nil",
 		)
 	}
+
+	return nil
 }
 
 func Setup(s *godog.Suite) {
