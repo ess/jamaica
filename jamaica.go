@@ -18,13 +18,13 @@ var lastCommandRanErr error
 func iRun(fullCommand string) error {
 	args := strings.Split(fullCommand, " ")[1:]
 
-	rootCmd.SetArgs(args)
+	cmd.RootCmd.SetArgs(args)
 
 	old := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	lastCommandRanErr = rootCmd.Execute()
+	lastCommandRanErr = cmd.RootCmd.Execute()
 	outC := make(chan string)
 	go func() {
 		var buf bytes.Buffer
@@ -60,7 +60,9 @@ func theCommandFails() error {
 	return nil
 }
 
-func Setup(s *godog.Suite) {
+func StepUp(s *godog.Suite) {
+	rootCmd = cmd
+
 	s.Step(`^I run "([^"]*)"$`, iRun)
 	s.Step(`the command succeeds`, theCommandSucceeds)
 	s.Step(`the command fails`, theCommandFails)
@@ -69,4 +71,8 @@ func Setup(s *godog.Suite) {
 		commandOutput = ""
 		lastCommandRanErr = nil
 	})
+}
+
+func SetRootCmd(c *cobra.Command) {
+	rootCmd = c
 }
