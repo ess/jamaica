@@ -78,3 +78,7 @@ func StepUp(s *godog.Suite) {
 func SetRootCmd(cmd *cobra.Command) {
 	rootCmd = cmd
 }
+
+func LastCommandOutput() string {
+	commandOutput
+}
