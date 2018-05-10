@@ -6,12 +6,19 @@ import (
 	"io"
 	"os"
 	"strings"
-
-	"github.com/DATA-DOG/godog"
-	"github.com/spf13/cobra"
 )
 
-var rootCmd *cobra.Command
+type Command interface {
+	SetArgs([]string)
+	Execute() error
+}
+
+type Suite interface {
+	Step(interface{}, interface{})
+	BeforeScenario(func(interface{}))
+}
+
+var rootCmd Command
 var commandOutput string
 var lastCommandRanErr error
 
@@ -64,7 +71,7 @@ func theCommandFails() error {
 	return nil
 }
 
-func StepUp(s *godog.Suite) {
+func StepUp(s Suite) {
 	s.Step(`^I run "([^"]*)"$`, iRun)
 	s.Step(`the command succeeds`, theCommandSucceeds)
 	s.Step(`the command fails`, theCommandFails)
