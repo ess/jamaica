@@ -72,7 +72,8 @@ func theCommandFails() error {
 }
 
 func StepUp(s Suite) {
-	s.Step(`^I run "([^"]*)"$`, iRun)
+	irunregex := fmt.Sprintf(`^I run %s([^%s]*)%s$`, "`", "`", "`")
+	s.Step(irunregex, iRun)
 	s.Step(`the command succeeds`, theCommandSucceeds)
 	s.Step(`the command fails`, theCommandFails)
 
@@ -82,7 +83,7 @@ func StepUp(s Suite) {
 	})
 }
 
-func SetRootCmd(cmd *cobra.Command) {
+func SetRootCmd(cmd Command) {
 	rootCmd = cmd
 }
 
