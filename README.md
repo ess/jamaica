@@ -1,5 +1,6 @@
 ## History ##
 
+* v0.0.8 - No hard deps
 * v0.0.7 - Fuck it
 * v0.0.6 - And now you can get the command output
 * v0.0.5 - Now maybe even working
