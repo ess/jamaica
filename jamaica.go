@@ -104,25 +104,19 @@ func iRun(fullCommand string) error {
 }
 
 func stdoutContains(s string) error {
-  if !strings.Contains(commandStdout, s) {
-    return fmt.Errorf(
-      `Expected stdout to contain "%s"`,
-      s,
-    )
-  }
+	if !strings.Contains(commandStdout, s) {
+		return fmt.Errorf(`Expected stdout to contain "%s"`, s)
+	}
 
-  return nil
+	return nil
 }
 
 func stdoutIs(s string) error {
-  if commandStdout != s {
-    return fmt.Errorf(
-      `Expected stdout to contain exactly "%s"`,
-      s
-    )
-  }
+	if commandStdout != s {
+		return fmt.Errorf(`Expected stdout to contain exactly "%s"`, s)
+	}
 
-  return nil
+	return nil
 }
 
 func theCommandSucceeds() error {
