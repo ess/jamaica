@@ -1,3 +1,4 @@
+// Package jamaica provides handy godog steps for testing CLI applications
 package jamaica
 
 import (
@@ -8,23 +9,61 @@ import (
 	"strings"
 )
 
+// Command is an interface that describes a command that we want to test
+// in-process.
+//
+// As this command will be run in-process (rather than via Exec()), it is
+// expected to have a SetArgs() method to set its CLI arguments.
 type Command interface {
 	SetArgs([]string)
 	Execute() error
 }
 
+// Suite is an interface that describes the parts of the godog.Suite interface
+// used within the package
 type Suite interface {
 	Step(interface{}, interface{})
 	BeforeScenario(func(interface{}))
 }
 
+// SetRootCmd takes a Command and registers it as the app that we want to
+// test in-process. If this is not set, calls to the "I run ..." step will
+// fail with a relevant message.
+func SetRootCmd(cmd Command) {
+	rootCmd = cmd
+}
+
+// StepUp takes a Suite and injects the jamaica step definitions into it:
+//  * When I run `somecommand`
+//  * Then it exits successfully
+//  * Then it exits with an error
+//  * Then stdout contains "some string"
+//  * Then stdout is "some string"
+func StepUp(s Suite) {
+	irunregex := fmt.Sprintf(`^I run %s([^%s]*)%s$`, "`", "`", "`")
+	s.Step(irunregex, iRun)
+	s.Step(`^it exits successfully$`, theCommandSucceeds)
+	s.Step(`^it exits with an error$`, theCommandFails)
+
+	s.BeforeScenario(func(interface{}) {
+		commandStdout = ""
+		lastCommandRanErr = nil
+	})
+}
+
+// LastCommandStdout returns a string representation of the output (including
+// newlines) of a command run with the "I run" step
+func LastCommandStdout() string {
+	return commandStdout
+}
+
 var rootCmd Command
-var commandOutput string
+var commandStdout string
 var lastCommandRanErr error
 
 func iRun(fullCommand string) error {
 	if rootCmd == nil {
-		return fmt.Errorf("You must set the root command via jamaica.SetRootCmd before running Jamaica steps.")
+		return fmt.Errorf("jamaica.SetRootCmd must be set before running Jamaica steps")
 	}
 
 	args := strings.Split(fullCommand, " ")[1:]
@@ -45,9 +84,31 @@ func iRun(fullCommand string) error {
 
 	w.Close()
 	os.Stdout = old
-	commandOutput = <-outC
+	commandStdout = <-outC
 
 	return nil
+}
+
+func stdoutContains(s string) error {
+  if !strings.Contains(commandStdout, s) {
+    return fmt.Errorf(
+      `Expected stdout to contain "%s"`,
+      s,
+    )
+  }
+
+  return nil
+}
+
+func stdoutIs(s string) error {
+  if commandStdout != s {
+    return fmt.Errorf(
+      `Expected stdout to contain exactly "%s"`,
+      s
+    )
+  }
+
+  return nil
 }
 
 func theCommandSucceeds() error {
@@ -69,24 +130,4 @@ func theCommandFails() error {
 	}
 
 	return nil
-}
-
-func StepUp(s Suite) {
-	irunregex := fmt.Sprintf(`^I run %s([^%s]*)%s$`, "`", "`", "`")
-	s.Step(irunregex, iRun)
-	s.Step(`^the command succeeds$`, theCommandSucceeds)
-	s.Step(`^the command fails$`, theCommandFails)
-
-	s.BeforeScenario(func(interface{}) {
-		commandOutput = ""
-		lastCommandRanErr = nil
-	})
-}
-
-func SetRootCmd(cmd Command) {
-	rootCmd = cmd
-}
-
-func LastCommandOutput() string {
-	return commandOutput
 }
