@@ -128,6 +128,7 @@ Simply run your test suite via either `godog` or by using godog with the "test m
 
 ## History ##
 
+* v1.0.2 - Added missing steps
 * v1.0.1 - Fixing some typos
 * v1.0.0 - First stable release
 * v0.0.8 - No hard deps
