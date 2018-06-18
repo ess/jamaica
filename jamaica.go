@@ -58,6 +58,8 @@ func StepUp(s Suite) {
 	s.Step(irunregex, iRun)
 	s.Step(`^it exits successfully$`, theCommandSucceeds)
 	s.Step(`^it exits with an error$`, theCommandFails)
+	s.Step(`^stdout contains "([^"]*)"$`, stdoutContains)
+	s.Step(`^stdout is "([^"]*)"$`, stdoutIs)
 
 	s.BeforeScenario(func(interface{}) {
 		commandStdout = ""
