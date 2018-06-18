@@ -74,8 +74,8 @@ func theCommandFails() error {
 func StepUp(s Suite) {
 	irunregex := fmt.Sprintf(`^I run %s([^%s]*)%s$`, "`", "`", "`")
 	s.Step(irunregex, iRun)
-	s.Step(`the command succeeds`, theCommandSucceeds)
-	s.Step(`the command fails`, theCommandFails)
+	s.Step(`^the command succeeds$`, theCommandSucceeds)
+	s.Step(`^the command fails$`, theCommandFails)
 
 	s.BeforeScenario(func(interface{}) {
 		commandOutput = ""
