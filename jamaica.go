@@ -73,6 +73,10 @@ func LastCommandStdout() string {
 	return commandStdout
 }
 
+func LastCommandStatus() error {
+	return lastCommandRanErr
+}
+
 var rootCmd Command
 var commandStdout string
 var lastCommandRanErr error
